@@ -1,19 +1,17 @@
 package daos;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CardDTO implements DAO{
+public class CardDAO implements DAO {
 
     Connection connection = DatabaseConnectionEngine.getConnection();
 
-    public CardDTO findBySSN(String ssn) {
+    public CardDTO findByCardNumber(String cardNum) {
         try {
             Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery("SELECT * FROM CARD_DATA WHERE customer_ssn = ssn");
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM CARD_DATA WHERE credit_card_number =" + cardNum);
             if (resultSet.next()) {
                 return retrieveUserData(resultSet);
             }
@@ -24,18 +22,73 @@ public class CardDTO implements DAO{
     }
 
     public List<CardDTO> findAll() {
+        List<CardDTO> list = new ArrayList<>();
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery("SELECT * FROM CARD_DATA");
+            while (resultSet.next()) {
+                list.add(retrieveUserData(resultSet));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public Boolean update(CardDTO dto) {
-        return null;
+        try {
+            PreparedStatement stmt = connection.prepareStatement("UPDATE dto SET card_type=?, first_name=?, last_name=?, customer_ssn=? WHERE credit_card_number=?");
+            stmt.setString(1, dto.getCard_type());
+            stmt.setString(2, dto.getFirst_name());
+            stmt.setString(3, dto.getLast_name());
+            stmt.setString(4, dto.getSSN());
+            stmt.setString(5, dto.getCredit_card_number());
+
+            int i = stmt.executeUpdate();
+
+            if(i == 1){
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public Boolean create(CardDTO dto) {
-        return null;
+        try {
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO dto VALUES (?, ?, ?, ?, ?)");
+            ps.setString(1, dto.getCard_type());
+            ps.setString(2, dto.getFirst_name());
+            ps.setString(3, dto.getLast_name());
+            ps.setString(4, dto.getCredit_card_number());
+            ps.setString(5, dto.getSSN());
+            int i = ps.executeUpdate();
+
+            if (i == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public Boolean delete(String ssn) { return null; }
+    public Boolean delete(String cardNum) {
+
+        try {
+            Statement stmt = connection.createStatement();
+            int i = stmt.executeUpdate("DELETE FROM BANK_DATA WHERE customer_card_number=" + cardNum);
+
+            if (i == 1) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     public CardDTO retrieveUserData(ResultSet resultSet) throws SQLException {
         CardDTO card = new CardDTO();

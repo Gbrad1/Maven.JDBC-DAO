@@ -1,6 +1,8 @@
 package daos;
 
-public class CardDTO {
+import models.DTO;
+
+public class CardDTO implements DTO {
 
     private String card_type;
     private String first_name;
@@ -16,7 +18,7 @@ public class CardDTO {
         this.ssn = ssn;
     }
 
-    public CardDTO() { }
+    public CardDTO() {}
 
     public String getCard_type() {
         return card_type;
@@ -56,5 +58,10 @@ public class CardDTO {
 
     public void setSSN(String ssn) {
         this.ssn = ssn;
+    }
+
+    @Override
+    public String findByCardNumber() {
+        return getCredit_card_number();
     }
 }
