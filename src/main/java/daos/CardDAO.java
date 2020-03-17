@@ -32,12 +32,12 @@ public class CardDAO implements DAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return list;
     }
 
     public Boolean update(CardDTO dto) {
         try {
-            PreparedStatement stmt = connection.prepareStatement("UPDATE dto SET card_type=?, first_name=?, last_name=?, customer_ssn=? WHERE credit_card_number=?");
+            PreparedStatement stmt = connection.prepareStatement("UPDATE CARD_DATA SET card_type=?, first_name=?, last_name=?, customer_ssn=? WHERE credit_card_number=?");
             stmt.setString(1, dto.getCard_type());
             stmt.setString(2, dto.getFirst_name());
             stmt.setString(3, dto.getLast_name());
@@ -57,7 +57,7 @@ public class CardDAO implements DAO {
 
     public Boolean create(CardDTO dto) {
         try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO dto VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO CARD_DATA VALUES (?, ?, ?, ?, ?)");
             ps.setString(1, dto.getCard_type());
             ps.setString(2, dto.getFirst_name());
             ps.setString(3, dto.getLast_name());
@@ -78,7 +78,7 @@ public class CardDAO implements DAO {
 
         try {
             Statement stmt = connection.createStatement();
-            int i = stmt.executeUpdate("DELETE FROM BANK_DATA WHERE customer_card_number=" + cardNum);
+            int i = stmt.executeUpdate("DELETE FROM CARD_DATA WHERE credit_card_number=" + cardNum);
 
             if (i == 1) {
                 return true;
